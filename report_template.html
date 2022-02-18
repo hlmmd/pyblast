@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <style>
+            @page {
+                size: a3 landscape;
+                margin: 2cm;
+            }
+            pre {
+            font-size: 12px
+            }
+        </style>
+        <meta charset="UTF-8">
+        <title>突变统计表</title>
+    </head>
+    <body>
+<div>
+<br  />
+<p>所有识别出来需要验证的突变株种类共为{{need | length}}种，需要启动验证的突变株种类为{{need | length -need_done_count}}种，以往验证过的突变株种类为{{need_done_count}}种。</p>
+<h2>需要启动验证突变</h2>
+
+    <table  border="1" class="dataframe">
+    <thead><tr><td>序号</td><td>Accession ID</td><td>突变位置与突变信息</td><td>是否需要启动验证</td><td>累计突变株数</td><td>总突变率（共统计{{total_count}}株）</td></tr></thead>
+    {% for item in need %}
+    <tr><td rowspan="2">{{loop.index}}</td>
+        <td>{{ item['key'] }}</td>
+        <td>{{item['description']}}</td>
+        <td>{{item['status']}}</td>
+        <td>{{item['count']}}</td>
+        <td>{{item['ratio']}}</td></tr>
+    <tr><td colspan="5"><pre>
+Query_1           1       {{ans_html}}
+
+{{item['key']}}{{item['start_index']}}   {{item['htmlseq']}}</pre></td>
+</tr>
+    {% endfor%}
+
+    </table>
+
+<h2>其他突变</h2>
+<table  border="1" class="dataframe">
+    <thead><tr><td>序号</td><td>Accession ID</td><td>突变位置与突变信息</td><td>是否需要启动验证</td><td>累计突变株数</td><td>总突变率（共统计{{total_count}}株）</td></tr></thead>
+    {% for item in unneed %}
+    <tr><td rowspan="2">{{loop.index}}</td>
+        <td>{{ item['key'] }}</td>
+        <td>{{item['description']}}</td>
+        <td>{{item['status']}}</td>
+        <td>{{item['count']}}</td>
+        <td>{{item['ratio']}}</td></tr>
+    <tr><td colspan="5"><pre>
+Query_1           1       {{ans_html}}
+
+{{item['key']}}{{item['start_index']}}   {{item['htmlseq']}}</pre></td>
+</tr>
+    {% endfor%}
+</div>
+</body>
+</html>

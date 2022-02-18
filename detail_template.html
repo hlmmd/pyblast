@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <style>
+            @page {
+                size: a4 landscape;
+                margin: 2cm;
+            }
+            pre {
+            font-size: 12px
+            }
+        </style>
+        <meta charset="UTF-8">
+    </head>
+<body>
+<div>
+<pre>总计突变数{{items | length}}
+
+Query_1           1       {{ans_html}}{% for item in items %}
+{{item['key']}}{{item['start_index']}}   {{item['htmlstr']}}{% endfor%}
+</pre>
+</div>
+</body>
+</html>
