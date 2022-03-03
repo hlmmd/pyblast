@@ -1,4 +1,3 @@
-bin/
-db/
-origin_data/
-result/
+db/*
+origin_data/*
+result/*
