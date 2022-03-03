@@ -39,7 +39,7 @@ output_xml_filename = 'origin_data/' + filename+'.xml'
 report_filename = 'result/'+filename + '_report.html'
 detail_html = 'origin_data/' + filename+'.html'
 detail_pdf = 'result/' + filename+'.pdf'
-typenames = ['N','ORF1ab']
+typenames = ['N', 'ORF1ab']
 
 df = pd.read_excel('database.xlsx', sheet_name=0)
 database = {}
@@ -99,7 +99,6 @@ ans = [
     'CCTACAACTTGTGCTAATGACCCTGTGGGTTTTACACTTAAAAACACAGTCTGTACCGTCTGCGGTATGTGGAAAGGTTATGGCTGTAGTTGTGATCAACTCCGCGAACCCATGCTTCAGTCAGCTGATGCACAATCGTTTTTAAACGGGTTTGCGGTG'
 ]
 
-
 ans_html = [
     'TCAACTCCAGGCAGCAGTA<span style="background:#90ee90">GGGGAACTTCTCCTGCTAGAAT</span>GGCTGGCAATGGCGGTGATGCTGCTCTTGCT<span style="background:#90ee90">TTGCTGCTGCTTGACAGATT</span>GAAC<span style="background:#90ee90">CAGCTTGAGAGCAAAATGTCTG</span>GTAAAGGCCAACAACAACAA',
     'CCTACAACTTGTGCTAATGA<span style="background:#90ee90">CCCTGTGGGTTTTACACTTAA</span>AAACACAGTCTGTA<span style="background:#90ee90">CCGTCTGCGGTATGTGGAAAGGTTATGG</span>CTGTAGTTGTGATCAACTCCGCGAACCCATGCTTCAG<span style="background:#90ee90">TCAGCTGATGCACAATCGT</span>TTTTAAACGGGTTTGCGGTG'
@@ -113,6 +112,8 @@ positions = [
 ]
 
 # 处理有插入情况下，引物探针的index
+
+
 def get_key_pos_index(insert_indexs):
     pos = copy.deepcopy(positions[type_index])
     for index in insert_indexs:
@@ -151,7 +152,8 @@ def get_key_compstr(seq, pos):
 
 def change_all_seq_to_html(query, seq, pos):
     #pos = positions[type_index]
-    s1, s2, s3, s4 = seq[pos[0]:pos[1]],  seq[pos[2]                                              :pos[3]], seq[pos[4]:pos[5]], seq[pos[6]:]
+    s1, s2, s3, s4 = seq[pos[0]:pos[1]],  seq[pos[2]
+        :pos[3]], seq[pos[4]:pos[5]], seq[pos[6]:]
 
     # 正向引物,探针，反向引物
     ss1, ss2, ss3 = seq[pos[1]:pos[2]], seq[pos[3]:pos[4]], seq[pos[5]:pos[6]]
@@ -178,7 +180,7 @@ def get_diff_range(hit, query):
                 is_deletion = True
             elif query[i] == '-':
                 is_insertion = True
-                insert_count = insert_count + 1
+                insert_count = insert_count
             temp.append(i - insert_count)
             j = i+1
             while j < len(hit):
@@ -220,7 +222,7 @@ def des_helper(t1, t2, typestr, reserve):
                     diff[0]+1, t2[diff[0]:diff[1]])
             elif len(diff) == 3 and diff[2] == '+':
                 retstr += '3\'端第{}个碱基插入{}突变'.format(
-                    diff[0]+1, t2[diff[0]:diff[1]])
+                    diff[0], t1[diff[0]:diff[1]])
             else:
                 retstr += '3\'端第{}个碱基{}>{}突变'.format(
                     diff[0]+1, t2[diff[0]:diff[1]], t1[diff[0]:diff[1]])
@@ -231,7 +233,7 @@ def des_helper(t1, t2, typestr, reserve):
                         diff[0]+1, diff[1], t2[diff[0]:diff[1]][::-1])
                 elif len(diff) == 3 and diff[2] == '+':
                     retstr += '3\'端第{}个碱基插入{}突变'.format(
-                        diff[0]+1, t2[diff[0]:diff[1]][::-1])
+                        diff[0], t1[diff[0]:diff[1]][::-1])
                 else:
                     retstr += '3\'端第{}_{}个碱基{}>{}突变'.format(
                         diff[0]+1, diff[1], t2[diff[0]:diff[1]][::-1], t1[diff[0]:diff[1]][::-1])
@@ -241,7 +243,7 @@ def des_helper(t1, t2, typestr, reserve):
                         diff[0]+1, diff[1], t2[diff[0]:diff[1]])
                 elif len(diff) == 3 and diff[2] == '+':
                     retstr += '3\'端第{}个碱基插入{}突变'.format(
-                        diff[0]+1, t2[diff[0]:diff[1]])
+                        diff[0], t1[diff[0]:diff[1]])
                 else:
                     retstr += '3\'端第{}_{}个碱基{}>{}突变'.format(
                         diff[0]+1, diff[1], t2[diff[0]:diff[1]], t1[diff[0]:diff[1]])
@@ -261,7 +263,7 @@ def des_helper2(t1, t2, typestr, reserve):
         if diff[1] - diff[0] == 1:
             if len(diff) == 3 and diff[2] == '+':
                 retstr += '3\'端第{}个碱基插入{}突变'.format(
-                    diff[0]+1, t2[diff[0]:diff[1]][::-1])
+                    diff[0], t1[diff[0]:diff[1]][::-1])
             else:
                 retstr += '3\'端第{}个碱基{}>{}突变'.format(
                     diff[0]+1, t2[diff[0]:diff[1]], t1[diff[0]:diff[1]])
@@ -269,14 +271,14 @@ def des_helper2(t1, t2, typestr, reserve):
             if reserve:
                 if len(diff) == 3 and diff[2] == '+':
                     retstr += '3\'端第{}个碱基插入{}突变'.format(
-                        diff[0]+1, t2[diff[0]:diff[1]][::-1])
+                        diff[0], t1[diff[0]:diff[1]][::-1])
                 else:
                     retstr += '3\'端第{}_{}个碱基{}>{}突变'.format(
                         diff[0]+1, diff[1], t2[diff[0]:diff[1]][::-1], t1[diff[0]:diff[1]][::-1])
             else:
                 if len(diff) == 3 and diff[2] == '+':
                     retstr += '3\'端第{}个碱基插入{}突变'.format(
-                        diff[0]+1, t2[diff[0]:diff[1]])
+                        diff[0], t1[diff[0]:diff[1]])
                 else:
                     retstr += '3\'端第{}_{}个碱基{}>{}突变'.format(
                         diff[0]+1, diff[1], t2[diff[0]:diff[1]], t1[diff[0]:diff[1]])
