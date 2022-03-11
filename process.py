@@ -11,7 +11,7 @@ for path, dirs, files in os.walk('db'):
             filepaths.append(filepath)
 
 
-cmd_sequence = [ 0, 1]
+cmd_sequence = [100, 0, 1]
 for t in cmd_sequence:
     for filepath in filepaths:
         cmd = 'python biopython.py {} {}'.format(filepath, t)

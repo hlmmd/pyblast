@@ -201,7 +201,7 @@ def get_diff_range(hit, query):
             elif is_insertion:
                 temp.append('+')
             ret.append(temp)
-            i = j
+            i = j - 1
         i = i+1
     return ret
 
@@ -488,7 +488,7 @@ for key in report:
 lists = sorted(lists, key=lambda x: (-x['count'], x['key']))
 
 for item in lists:
-    ratio_str = '{:4.2f}%'.format(100.0 * item['count'] / len(blast_qresults))
+    ratio_str = '{:4.2f}%'.format(100.0 * item['count'] / len(items))
     item['ratio'] = ratio_str
     matched = False
     for t in database:
@@ -521,7 +521,7 @@ def generate_html(need, unneed, need_done_count):
     with open(report_filename, 'w+', encoding='utf-8') as fout:
         html_content = template.render(
             need_done_count=need_done_count,
-            total_count=len(blast_qresults),
+            total_count=len(items),
             ans_html=ans_html[type_index],
             need=need,
             unneed=unneed)
@@ -535,7 +535,7 @@ if os.path.exists(result_filename) == False:
     with open(result_filename, 'a+', encoding='gb18030') as fout:
         fout.write('突变类型,总突变序列数,总突变类型,需验证突变株,已验证,需要验证\n')
 with open(result_filename, 'a+') as fout:
-    fout.write('{},{},{},{},{},{}\n'.format(filename, len(blast_qresults), len(unneed_lists) + len(need_lists),
+    fout.write('{},{},{},{},{},{}\n'.format(filename, len(items), len(unneed_lists) + len(need_lists),
                                             len(need_lists), need_done_count, len(need_lists) - need_done_count))
 
 result_filename = 'result/detail.csv'
