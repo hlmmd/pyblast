@@ -469,7 +469,7 @@ for blast_result in blast_qresults:
     report[value]['description'] = desc_str2
     report[value]['count'] = 1
     report[value]['key'] = key
-    report[value]['seq'] = seq
+    report[value]['seq'] = origin_seq
     report[value]['htmlseq'] = oneitem['htmlseq']
     report[value]['start_index'] = fragment.hit_range[0]+1
     report[value]['key_position'] = copy.deepcopy(key_position)
