@@ -368,7 +368,8 @@ def process_insert(str1, str2):
     for i in range(0, len(str1)):
         if str1[i] != '-':
             processed_str = processed_str+str2[i]
-    return ret, processed_str
+    #return ret, processed_str
+    return ret
 
 
 def generate_detail_html(report):
@@ -425,7 +426,7 @@ for blast_result in blast_qresults:
     insert_indexs = []
     key_position = pos
     if len(origin_answer) > len(ans[type_index]):
-        insert_indexs, seq = process_insert(origin_answer, seq)
+        insert_indexs = process_insert(origin_answer, seq)
         # print(insert_indexs,seq)
     if len(origin_answer) < len(ans[type_index]):
         # 如果有缺失，则补全
@@ -438,7 +439,7 @@ for blast_result in blast_qresults:
 
     if len(insert_indexs) > 0:
         key_position = get_key_pos_index(insert_indexs)
-    value = get_key_compstr(seq, key_position)
+    value = get_key_compstr(origin_seq, key_position)
     # 为了保证html和pdf中对齐，补空格
     for _ in range(len(key), 18):
         key = key + ' '
@@ -449,7 +450,6 @@ for blast_result in blast_qresults:
     oneitem['htmlseq'] = change_all_seq_to_html(
         origin_answer, origin_seq, key_position)
     items.append(oneitem)
-
     if value in report:
         if from_china:
             report[value]['from_china'] = '是'
