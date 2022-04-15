@@ -1,4 +1,5 @@
 from datetime import datetime
+from distutils.fancy_getopt import wrap_text
 from xml.dom.pulldom import PROCESSING_INSTRUCTION
 from Bio import SeqIO
 from Bio.Blast.Applications import NcbiblastnCommandline
@@ -30,6 +31,8 @@ if int(sys.argv[2]) == 100:
         dbtype="nucl", input_file=db_filename)()[0]
     exit(0)
 
+detail_write_data = []
+result_write_data = []
 
 type_index = int(sys.argv[2])
 filename_prefixs = ['N_', 'O_']
@@ -401,6 +404,20 @@ visited = {}
 report = {}
 pos = positions[type_index]
 items = []
+
+def is_from_china(data):
+    words = ['China', 'ShenZhen','Heilongjiang','Beijing'
+            'Jilin','Liaoning','Tianjing','Hebei','Shanxi','Inner Mongoria',
+            'Shanghai','Jiangsu','Shandong','Zhejiang','Anhui','Jiangxi','Fujian','Guangdong',
+            'Guangxi','Hainan','Henan','Hubei','Hunan','Shaanxi','Xinjiang','Ningxia','Gansu','Qinghai',
+            'Chongqing','Sichuan','Guizhou','Yunnan',
+            #'Taiwan','Hong Kong','Macao'
+            ]
+    for word in words:
+        if word.upper() in data:
+            return True
+    return False
+
 for blast_result in blast_qresults:
     fragment = blast_result[0][0]
     from_china = False
@@ -408,10 +425,10 @@ for blast_result in blast_qresults:
     keys = fragment.hit.description.strip().split('|')
     if len(keys) == 3:
         key = fragment.hit.description.strip().split('|')[1]
-        from_china = 'CHINA' in fragment.hit.description.strip().upper()
+        from_china = is_from_china(fragment.hit.description.strip().upper())
     else:
         key = fragment.hit.id.strip().split('|')[1]
-        from_china = 'CHINA' in fragment.hit.id.strip().upper()
+        from_china = is_from_china(fragment.hit.id.strip().upper())
     key = key.strip()
     if key in visited:
         continue
@@ -530,24 +547,49 @@ def generate_html(need, unneed, need_done_count):
 
 generate_html(need_lists, unneed_lists, need_done_count)
 
-result_filename = 'result/result.csv'
-if os.path.exists(result_filename) == False:
-    with open(result_filename, 'a+', encoding='gb18030') as fout:
-        fout.write('突变类型,总突变序列数,总突变类型,需验证突变株,已验证,需要验证\n')
-with open(result_filename, 'a+') as fout:
-    fout.write('{},{},{},{},{},{}\n'.format(filename, len(items), len(unneed_lists) + len(need_lists),
-                                            len(need_lists), need_done_count, len(need_lists) - need_done_count))
+result_write_data.append([filename, len(items), len(unneed_lists) + len(need_lists),
+                        len(need_lists), need_done_count, len(need_lists) - need_done_count])
 
-result_filename = 'result/detail.csv'
-if os.path.exists(result_filename) == False:
-    with open(result_filename, 'a+', encoding='gb18030') as fout:
-        fout.write('毒株,基因,描述,数量,代表序列ID,是否需要验证,验证编号,验证时间,中国序列,碱基序列, \
-        是否有影响,验证结果,突变株是否对所有靶标产生影响\n')
-with open(result_filename, 'a+') as fout:
-    for item in need_lists:
-        if item['seq'][0] == '-':
-            item['seq'] = ' ' + item['seq']
-        fout.write('{},{},\"{}\",{},{},{},{},{},{},\"{}\",{},{},{}\n'.format(fname, typenames[type_index], item['description'],
-                                                                             item['count'], item['key'].strip(), item['status'], item.get(
-                                                                                 'valid_id', ""), item.get('valid_time', ""), item['from_china'], item['seq'],
-                                                                             item.get('yingxiang', ""), item.get('yanzhengjieguo', ""), item.get('suoyouba', "")))
+for item in need_lists:
+    if item['seq'][0] == '-':
+        item['seq'] = ' ' + item['seq']
+    detail_write_data.append([fname, typenames[type_index], item['description'],
+                            item['count'], item['key'].strip(), item['status'], item.get(
+                                'valid_id', ""), item.get('valid_time', ""), item['from_china'], item['seq'],
+                            item.get('yingxiang', ""), item.get('yanzhengjieguo', ""), item.get('suoyouba', "")])
+
+
+def gen_detail_excel():
+    detail_cols = ['毒株','基因','描述','数量','代表序列ID','是否需要验证','验证编号','验证时间','中国序列','碱基序列',
+        '是否有影响','验证结果','突变株是否对所有靶标产生影响']
+    xlsx_path = 'result/detail.xlsx'
+    if os.path.exists(xlsx_path) == False:
+        df=pd.DataFrame(detail_write_data,columns=detail_cols)
+        df.to_excel(xlsx_path , index=False)
+    else:
+        with pd.ExcelWriter(xlsx_path,engine='openpyxl',mode='a') as writer:
+            writer.if_sheet_exists = "replace"
+            df_old = pd.read_excel(xlsx_path, sheet_name=0)
+            df=pd.DataFrame(detail_write_data,columns=detail_cols)
+            f = [df_old, df]
+            result = pd.concat(f, axis=0)
+            result.to_excel(writer, index=False)
+
+gen_detail_excel()
+
+def gen_result_excel():
+    cols = ['突变类型','总突变序列数','总突变类型','需验证突变株','已验证','需要验证']
+    xlsx_path = 'result/result.xlsx'
+    if os.path.exists(xlsx_path) == False:
+        df=pd.DataFrame(result_write_data,columns=cols)
+        df.to_excel(xlsx_path , index=False)
+    else:
+        with pd.ExcelWriter(xlsx_path,engine='openpyxl',mode='a') as writer:
+            writer.if_sheet_exists = "replace"
+            df_old = pd.read_excel(xlsx_path, sheet_name=0)
+            df=pd.DataFrame(result_write_data, columns=cols)
+            f = [df_old, df]
+            result = pd.concat(f, axis=0)
+            result.to_excel(writer, index=False)
+
+gen_result_excel()
