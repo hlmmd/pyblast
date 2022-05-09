@@ -554,13 +554,13 @@ for item in need_lists:
     if item['seq'][0] == '-':
         item['seq'] = ' ' + item['seq']
     detail_write_data.append([fname, typenames[type_index], item['description'],
-                            item['count'], item['key'].strip(), item['status'], item.get(
+                            item['count'], item['ratio'], item['key'].strip(), item['status'], item.get(
                                 'valid_id', ""), item.get('valid_time', ""), item['from_china'], item['seq'],
                             item.get('yingxiang', ""), item.get('yanzhengjieguo', ""), item.get('suoyouba', "")])
 
 
 def gen_detail_excel():
-    detail_cols = ['毒株','基因','描述','数量','代表序列ID','是否需要验证','验证编号','验证时间','中国序列','碱基序列',
+    detail_cols = ['毒株','基因','描述','本周累计突变株数','总突变率','代表序列ID','是否需要验证','验证编号','验证时间','是否为中国上传','碱基序列',
         '是否有影响','验证结果','突变株是否对所有靶标产生影响']
     xlsx_path = 'result/detail.xlsx'
     if os.path.exists(xlsx_path) == False:
