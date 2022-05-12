@@ -505,8 +505,10 @@ for key in report:
 lists = sorted(lists, key=lambda x: (-x['count'], x['key']))
 
 for item in lists:
-    ratio_str = '{:4.2f}%'.format(100.0 * item['count'] / len(items))
-    item['ratio'] = ratio_str
+    ratio_str = '{:4.2f}'.format(100.0 * item['count'] / len(items))
+    item['ratio'] = ratio_str+'%'
+    if  float(ratio_str) >= 0.0999:
+        item['need_experiment'] = True
     matched = False
     for t in database:
         if item['desc_str'] != database[t]['description'] and item['description'] != database[t]['description']:
