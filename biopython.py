@@ -320,7 +320,7 @@ def generate_desc_str(seq, answer, key_position):
     return retstr, retstr2
 
 
-def need_experiment(s, answer, pos):
+def need_experiment(s, answer, pos, ratio, from_china):
     keystr = get_key_compstr(s, pos)
     strans = get_key_compstr(answer, pos)
     # 缺失多余5个，有N都不验证
@@ -345,9 +345,14 @@ def need_experiment(s, answer, pos):
         for i in range(check_index[0], check_index[1]):
             if answer[i] != s[i]:
                 return True
-    return False
+
     # 中国上传
+    if from_china =='是':
+        return True
     # 突变频率> 0.1 %
+    if ratio >=0.0999:
+        return True
+    return False
 
 
 def process_insert(str1, str2):
@@ -490,10 +495,7 @@ for blast_result in blast_qresults:
     report[value]['htmlseq'] = oneitem['htmlseq']
     report[value]['start_index'] = fragment.hit_range[0]+1
     report[value]['key_position'] = copy.deepcopy(key_position)
-    report[value]['need_experiment'] = need_experiment(
-        origin_seq, origin_answer, key_position)
-    if from_china:
-        report[value]['need_experiment'] = True
+    report[value]['origin_answer'] = origin_answer
 
 generate_detail_html(items)
 change_html_to_pdf(detail_html, detail_pdf)
@@ -506,9 +508,9 @@ lists = sorted(lists, key=lambda x: (-x['count'], x['key']))
 
 for item in lists:
     ratio_str = '{:4.2f}'.format(100.0 * item['count'] / len(items))
+    item['need_experiment'] = need_experiment(
+        item['seq'], item['origin_answer'], item['key_position'] ,float(ratio_str), item['from_china'])
     item['ratio'] = ratio_str+'%'
-    if  float(ratio_str) >= 0.0999:
-        item['need_experiment'] = True
     matched = False
     for t in database:
         if item['desc_str'] != database[t]['description'] and item['description'] != database[t]['description']:
