@@ -50,7 +50,7 @@ for line in df.index:
     temp = {}
     temp['duzhuname'] = df[df.columns[1]].loc[line]
     pair = {
-        'B_1_427_B_1_429': 'B.1.427_B.1.429'
+        'B.1.427_B.1.429': 'B.1.427/B.1.429'
     }
     if temp['duzhuname'] in pair:
         temp['duzhuname'] = pair[temp['duzhuname']]
@@ -321,6 +321,9 @@ def generate_desc_str(seq, answer, key_position):
 
 
 def need_experiment(s, answer, pos, ratio, from_china):
+    # 突变频率< 0.1 %
+    if ratio <=0.0999:
+        return False
     keystr = get_key_compstr(s, pos)
     strans = get_key_compstr(answer, pos)
     # 缺失多余5个，有N都不验证
@@ -513,6 +516,8 @@ for item in lists:
     item['ratio'] = ratio_str+'%'
     matched = False
     for t in database:
+        if item['need_experiment'] == False:
+            break
         if item['desc_str'] != database[t]['description'] and item['description'] != database[t]['description']:
             continue
         matched = True
@@ -557,6 +562,8 @@ result_write_data.append([filename, len(items), len(unneed_lists) + len(need_lis
 for item in need_lists:
     if item['seq'][0] == '-':
         item['seq'] = ' ' + item['seq']
+    if fname =='B.1.427_B.1.429':
+        fname = 'B.1.427/B.1.429'
     detail_write_data.append([fname, typenames[type_index], item['description'],
                             item['count'], item['ratio'], item['key'].strip(), item['status'], item.get(
                                 'valid_id', ""), item.get('valid_time', ""), item['from_china'], item['seq'],
