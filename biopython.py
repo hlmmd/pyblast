@@ -35,14 +35,14 @@ detail_write_data = []
 result_write_data = []
 
 type_index = int(sys.argv[2])
-filename_prefixs = ['N_', 'O_']
+filename_prefixs = ['N_', 'O_', 'NJ_OR_','ORF-2_','qS_N_','N-2_','N-3_']
 fname = os.path.splitext(os.path.basename(db_filename))[0]
 filename = filename_prefixs[type_index] + fname
 output_xml_filename = 'origin_data/' + filename+'.xml'
 report_filename = 'result/'+filename + '_report.html'
 detail_html = 'origin_data/' + filename+'.html'
 detail_pdf = 'result/' + filename+'.pdf'
-typenames = ['N', 'ORF1ab']
+typenames = ['N', 'ORF1ab','NJ_OR','ORF-2','qS_N','N-2','N-3']
 
 df = pd.read_excel('database.xlsx', sheet_name=0)
 database = {}
@@ -80,7 +80,12 @@ for line in df.index:
         continue
     database[temp['description']] = temp
 
-query_filename = ['N_query.fasta', 'O_query.fasta']
+query_filename = ['N_query.fasta', 'O_query.fasta',
+                'NJ_OR_query.fasta',
+                'ORF-2_query.fasta',
+                'qS_N_query.fasta',
+                'N-2_query.fasta',
+                'N-3_query.fasta']
 query = SeqIO.read(query_filename[type_index], 'fasta')
 
 db_size = len(list(SeqIO.parse(db_filename, 'fasta')))
@@ -99,20 +104,41 @@ if len(blast_qresults) != db_size:
 
 ans = [
     'TCAACTCCAGGCAGCAGTAGGGGAACTTCTCCTGCTAGAATGGCTGGCAATGGCGGTGATGCTGCTCTTGCTTTGCTGCTGCTTGACAGATTGAACCAGCTTGAGAGCAAAATGTCTGGTAAAGGCCAACAACAACAA',
-    'CCTACAACTTGTGCTAATGACCCTGTGGGTTTTACACTTAAAAACACAGTCTGTACCGTCTGCGGTATGTGGAAAGGTTATGGCTGTAGTTGTGATCAACTCCGCGAACCCATGCTTCAGTCAGCTGATGCACAATCGTTTTTAAACGGGTTTGCGGTG'
+    'CCTACAACTTGTGCTAATGACCCTGTGGGTTTTACACTTAAAAACACAGTCTGTACCGTCTGCGGTATGTGGAAAGGTTATGGCTGTAGTTGTGATCAACTCCGCGAACCCATGCTTCAGTCAGCTGATGCACAATCGTTTTTAAACGGGTTTGCGGTG',
+    'TGGTGTTTATGATTACTTAGTTTCTACACAGGAGTTTAGATATATGAATTCACAGGGACTACTCCCACCCAAGAATAGCATAGATGCCTTCAAACTCAACATTAAATTGTTGGG',
+    'AGTACCATATTGTTATGATACCAATGTACTAGAAGGTTCTGTTGCTTATGAAAGTTTACGCCCTGACACACGTTATGTGCTCATGGATGGCTCTATTATTCAATTTCC',
+    'ATAATGGACCCCAAAATCAGCGAAATGCACCCCGCATTACGTTTGGTGGACCCTCAGATTCAACTGGCAGTAACCAGAATGGAGAACGCAGT',
+    'CCAAAAGGCTTCTACGCAGAAGGGAGCAGAGGCGGCAGTCAAGCCTCTTCTCGTTCCTCATCACGTAGTCGCAACAGTTCAAGAAATTCAACTCCAGGCAGC',
+    'AAAATGTCTGGTAAAGGCCAACAACAACAAGGCCAAACTGTCACTAAGAAATCTGCTGCTGAGGCTTCTAAGAAGCCTCGGCAAAAACGTACTGCCACTAAAGCATACAATGTAACACAAGCTTTCGG',
 ]
 
 ans_html = [
     'TCAACTCCAGGCAGCAGTA<span style="background:#90ee90">GGGGAACTTCTCCTGCTAGAAT</span>GGCTGGCAATGGCGGTGATGCTGCTCTTGCT<span style="background:#90ee90">TTGCTGCTGCTTGACAGATT</span>GAAC<span style="background:#90ee90">CAGCTTGAGAGCAAAATGTCTG</span>GTAAAGGCCAACAACAACAA',
-    'CCTACAACTTGTGCTAATGA<span style="background:#90ee90">CCCTGTGGGTTTTACACTTAA</span>AAACACAGTCTGTA<span style="background:#90ee90">CCGTCTGCGGTATGTGGAAAGGTTATGG</span>CTGTAGTTGTGATCAACTCCGCGAACCCATGCTTCAG<span style="background:#90ee90">TCAGCTGATGCACAATCGT</span>TTTTAAACGGGTTTGCGGTG'
+    'CCTACAACTTGTGCTAATGA<span style="background:#90ee90">CCCTGTGGGTTTTACACTTAA</span>AAACACAGTCTGTA<span style="background:#90ee90">CCGTCTGCGGTATGTGGAAAGGTTATGG</span>CTGTAGTTGTGATCAACTCCGCGAACCCATGCTTCAG<span style="background:#90ee90">TCAGCTGATGCACAATCGT</span>TTTTAAACGGGTTTGCGGTG',
+    'TGGTGTTTAT<span style="background:#90ee90">GATTACTTAGTTTCTACACAGGAGTTT</span>AGATATATGAATT<span style="background:#90ee90">CACAGGGACTACTCCCACCCAAG</span>AATA<span style="background:#90ee90">GCATAGATGCCTTCAAACTCAACATTA</span>AATTGTTGGG',
+    'AGTACCATAT<span style="background:#90ee90">TGTTATGATACCAATGTACTAGAAGGT</span>TCTGTT<span style="background:#90ee90">GCTTATGAAAGTTTACGCCCTGACA</span>CACGTTAT<span style="background:#90ee90">GTGCTCATGGATGGCTCTATTA</span>TTCAATTTCC',
+    'ATAATGGACC<span style="background:#90ee90">CCAAAATCAGCGAAATGCACCC</span>C<span style="background:#90ee90">GCATTACGTTTGGTGGACCCTC</span>AGATTC<span style="background:#90ee90">AACTGGCAGTAACCAGAATGG</span>AGAACGCAGT',
+    'CCAAAAGGCT<span style="background:#90ee90">TCTACGCAGAAGGGAGCA</span>GAGGCGG<span style="background:#90ee90">CAGTCAAGCCTCTTCTCGTTCCTCATC</span>ACGTAGT<span style="background:#90ee90">CGCAACAGTTCAAGAAATTCAAC</span>TCCAGGCAGC',
+    'AAAATGTCTG<span style="background:#90ee90">GTAAAGGCCAACAACAACAAG</span>GCCAAA<span style="background:#90ee90">CTGTCACTAAGAAATCTGCTGCTGAGGC</span>TTCTAAGAAGCCTCGGCAAAAACGTACT<span style="background:#90ee90">GCCACTAAAGCATACAATGTAACAC</span>AAGCTTTCGG',
 ]
 
 positions = [
     # 19,22,31,20,4,22,20
     [0, 19, 41, 72, 92, 96, 118, 138],
     # 20,21,14,28,37,19,20
-    [0, 20, 41, 55, 83, 120, 139, 159]
+    [0, 20, 41, 55, 83, 120, 139, 159],
+    # 10, 27, 13, 23, 4, 27, 10
+    [0, 10, 37, 50, 73, 77, 104, 114],
+    # 10, 27, 6, 25, 8, 22, 10
+    [0, 10, 37, 43, 68, 76, 98, 108],
+    # 10, 22, 1, 22, 6, 21,10
+    [0, 10, 32,33,55,61,82,92],
+    # 10, 18,7,27,7,24,10
+    [0, 10, 28,35,62,69,93,103],
+    # 10, 21, 6, 28, 28, 25, 10
+    [0,10,31,37,65,93,118,128],
 ]
+
 
 # 处理有插入情况下，引物探针的index
 
@@ -471,7 +497,7 @@ for blast_result in blast_qresults:
 
     oneitem = {}
     oneitem['key'] = key
-    oneitem['start_index'] = fragment.hit_range[0]+1
+    oneitem['start_index'] = '{:<5d}'.format(fragment.hit_range[0]+1)
     oneitem['htmlseq'] = change_all_seq_to_html(
         origin_answer, origin_seq, key_position)
     items.append(oneitem)
@@ -479,7 +505,7 @@ for blast_result in blast_qresults:
         if from_china:
             report[value]['from_china'] = '是'
             report[value]['key'] = key
-            report[value]['start_index'] = fragment.hit_range[0]+1
+            report[value]['start_index'] = '{:<5d}'.format(fragment.hit_range[0]+1)
         report[value]['count'] = report[value]['count'] + 1
         continue
     desc_str, desc_str2 = generate_desc_str(
@@ -496,7 +522,7 @@ for blast_result in blast_qresults:
     report[value]['key'] = key
     report[value]['seq'] = origin_seq
     report[value]['htmlseq'] = oneitem['htmlseq']
-    report[value]['start_index'] = fragment.hit_range[0]+1
+    report[value]['start_index'] = '{:<5d}'.format(fragment.hit_range[0]+1)
     report[value]['key_position'] = copy.deepcopy(key_position)
     report[value]['origin_answer'] = origin_answer
 
