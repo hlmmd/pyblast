@@ -35,14 +35,16 @@ detail_write_data = []
 result_write_data = []
 
 type_index = int(sys.argv[2])
-filename_prefixs = ['N_', 'O_', 'NJ_OR_','ORF-2_','qS_N_','N-2_','N-3_']
+filename_prefixs = ['N_', 'O_', 'NJ_OR_','ORF-2_','qS_N_','N-2_','N-3_',
+                    'NALL_','NALL2_']
 fname = os.path.splitext(os.path.basename(db_filename))[0]
 filename = filename_prefixs[type_index] + fname
 output_xml_filename = 'origin_data/' + filename+'.xml'
 report_filename = 'result/'+filename + '_report.html'
 detail_html = 'origin_data/' + filename+'.html'
 detail_pdf = 'result/' + filename+'.pdf'
-typenames = ['N', 'ORF1ab','NJ_OR','ORF-2','qS_N','N-2','N-3']
+typenames = ['N', 'ORF1ab','NJ_OR','ORF-2','qS_N','N-2','N-3',
+            'NALL1','NALL2']
 
 df = pd.read_excel('database.xlsx', sheet_name=0)
 database = {}
@@ -85,7 +87,9 @@ query_filename = ['N_query.fasta', 'O_query.fasta',
                 'ORF-2_query.fasta',
                 'qS_N_query.fasta',
                 'N-2_query.fasta',
-                'N-3_query.fasta']
+                'N-3_query.fasta',
+                'NALL1_query.fasta',
+                'NALL2_query.fasta']
 query = SeqIO.read(query_filename[type_index], 'fasta')
 
 db_size = len(list(SeqIO.parse(db_filename, 'fasta')))
@@ -101,7 +105,6 @@ blast_qresults = SearchIO.read(output_xml_filename, "blast-xml")
 if len(blast_qresults) != db_size:
     print('len(blast_qresults) != db_size', len(blast_qresults), db_size)
 
-
 ans = [
     'TCAACTCCAGGCAGCAGTAGGGGAACTTCTCCTGCTAGAATGGCTGGCAATGGCGGTGATGCTGCTCTTGCTTTGCTGCTGCTTGACAGATTGAACCAGCTTGAGAGCAAAATGTCTGGTAAAGGCCAACAACAACAA',
     'CCTACAACTTGTGCTAATGACCCTGTGGGTTTTACACTTAAAAACACAGTCTGTACCGTCTGCGGTATGTGGAAAGGTTATGGCTGTAGTTGTGATCAACTCCGCGAACCCATGCTTCAGTCAGCTGATGCACAATCGTTTTTAAACGGGTTTGCGGTG',
@@ -110,6 +113,10 @@ ans = [
     'ATAATGGACCCCAAAATCAGCGAAATGCACCCCGCATTACGTTTGGTGGACCCTCAGATTCAACTGGCAGTAACCAGAATGGAGAACGCAGT',
     'CCAAAAGGCTTCTACGCAGAAGGGAGCAGAGGCGGCAGTCAAGCCTCTTCTCGTTCCTCATCACGTAGTCGCAACAGTTCAAGAAATTCAACTCCAGGCAGC',
     'AAAATGTCTGGTAAAGGCCAACAACAACAAGGCCAAACTGTCACTAAGAAATCTGCTGCTGAGGCTTCTAAGAAGCCTCGGCAAAAACGTACTGCCACTAAAGCATACAATGTAACACAAGCTTTCGG',
+
+    'AAACAACGTCGGCCCCAAGGTTTACCCAATAATACTGCGTCTTGGTTCACCGCTCTCACTCAACATGGCAAGGAAGACCTTAAATTCCCTCGAGGACAAGGCGTTCCAATTAACACCAATAGC',
+#'GAACTTCTCCTGCTAGAATGGCTGGCAATGGCGGTGATGCTGCTCTTGCTTTGCTGCTGCTTGACAGATTGAACCAGCTTGAGAGCAAAATGTCTGGTAAAGGCCAACAACAACAAGGCCAAACTGTCACTAAGAAATCTGCTGCTGAGGCTTCTAAGAAGCCTCGGCAAAAACGTACTGCCACTAAAGCATACAATGTAACACAAGCTTTCGGCAGACGTGGTCCAGAACAAACCCAAGGAAATTTTGGGGACCAGGAACTAATCAGACAAGGAACTGATTACAAACATTGGCCGCAAATTGCACAATTTGCCCCCAGCGCTTCAGCGTTCTTCGGAATGTCGCGCATTGGCATGGAAGTCACACCTTCGGGAACGTGGTTGACCTACACAGGTGCCATCAAATTGGATGACAAAGATCCAAATTTCAAAGATCAAGTCATTTTGCTGAATAAGCATATTGACGCATACAAAACATTCCCACCAACAGAGCCTAAAAAGGACAAAAAGAAGAAGGCTGATGAAA',
+'GCCACTAAAGCATACAATGTAACACAAGCTTTCGGCAGACGTGGTCCAGAACAAACCCAAGGAAATTTTGGGGACCAGGAACTAATCAGACAAGGAACTGATTACAAACATTGGCC'
 ]
 
 ans_html = [
@@ -120,6 +127,9 @@ ans_html = [
     'ATAATGGACC<span style="background:#90ee90">CCAAAATCAGCGAAATGCACCC</span>C<span style="background:#90ee90">GCATTACGTTTGGTGGACCCTC</span>AGATTC<span style="background:#90ee90">AACTGGCAGTAACCAGAATGG</span>AGAACGCAGT',
     'CCAAAAGGCT<span style="background:#90ee90">TCTACGCAGAAGGGAGCA</span>GAGGCGG<span style="background:#90ee90">CAGTCAAGCCTCTTCTCGTTCCTCATC</span>ACGTAGT<span style="background:#90ee90">CGCAACAGTTCAAGAAATTCAAC</span>TCCAGGCAGC',
     'AAAATGTCTG<span style="background:#90ee90">GTAAAGGCCAACAACAACAAG</span>GCCAAA<span style="background:#90ee90">CTGTCACTAAGAAATCTGCTGCTGAGGC</span>TTCTAAGAAGCCTCGGCAAAAACGTACT<span style="background:#90ee90">GCCACTAAAGCATACAATGTAACAC</span>AAGCTTTCGG',
+
+    'AAACAACGTCGG<span style="background:#90ee90">CCCCAAGGTTTACCCAATA</span>ATACTGCGTCTTGGTTCACC<span style="background:#90ee90">GCTCTCACTCAACATGGCAA</span>GGAAGACCTTAAATTCCCTCGA<span style="background:#90ee90">GGACAAGGCGTTCCAATTAA</span>CACCAATAGC',
+    'AAACAACGTCGG<span style="background:#90ee90">CCCCAAGGTTTACCCAATA</span>ATACTGCGTCTTGGTTCACC<span style="background:#90ee90">GCTCTCACTCAACATGGCAA</span>GGAAGACCTTAAATTCCCTCGA<span style="background:#90ee90">GGACAAGGCGTTCCAATTAA</span>CACCAATAGC',
 ]
 
 positions = [
@@ -137,8 +147,11 @@ positions = [
     [0, 10, 28,35,62,69,93,103],
     # 10, 21, 6, 28, 28, 25, 10
     [0,10,31,37,65,93,118,128],
-]
 
+    [0,12,31,51,71,93,113,123],
+    #[0,0,527,527,527,527,527,527],
+    [0,11,32,57,77,87,107,116],
+]
 
 # 处理有插入情况下，引物探针的index
 
@@ -197,6 +210,8 @@ def get_diff_range(hit, query):
     ret = []
     if len(hit) != len(query):
         print('str len error')
+        print(hit)
+        print(query)
         exit(0)
     i = 0
     insert_count = 0
@@ -347,6 +362,10 @@ def generate_desc_str(seq, answer, key_position):
 
 
 def need_experiment(s, answer, pos, ratio, from_china):
+    # 中国上传
+    if from_china =='是':
+        return True
+
     # 突变频率< 0.1 %
     if ratio <=0.0999:
         return False
@@ -375,9 +394,6 @@ def need_experiment(s, answer, pos, ratio, from_china):
             if answer[i] != s[i]:
                 return True
 
-    # 中国上传
-    if from_china =='是':
-        return True
     # 突变频率> 0.1 %
     if ratio >=0.0999:
         return True
@@ -535,7 +551,9 @@ for key in report:
         lists.append(report[key])
 lists = sorted(lists, key=lambda x: (-x['count'], x['key']))
 
+cc = 0
 for item in lists:
+    cc = cc + item['count']
     ratio_str = '{:4.2f}'.format(100.0 * item['count'] / len(items))
     item['need_experiment'] = need_experiment(
         item['seq'], item['origin_answer'], item['key_position'] ,float(ratio_str), item['from_china'])
@@ -565,7 +583,7 @@ for item in lists:
         else:
             item['status'] = '是'
             need_lists.append(item)
-
+print('总突变个数',cc)
 
 def generate_html(need, unneed, need_done_count):
     env = Environment(loader=FileSystemLoader('./'))
