@@ -456,8 +456,8 @@ pos = positions[type_index]
 items = []
 
 def is_from_china(data):
-    words = ['China', 'ShenZhen','Heilongjiang','Beijing'
-            'Jilin','Liaoning','Tianjing','Hebei','Shanxi','Inner Mongoria',
+    words = ['China', 'ShenZhen','Heilongjiang','Beijing',
+            'Jilin','Liaoning','Tianjin','Hebei','Shanxi','Inner Mongoria',
             'Shanghai','Jiangsu','Shandong','Zhejiang','Anhui','Jiangxi','Fujian','Guangdong',
             'Guangxi','Hainan','Henan','Hubei','Hunan','Shaanxi','Xinjiang','Ningxia','Gansu','Qinghai',
             'Chongqing','Sichuan','Guizhou','Yunnan',
