@@ -362,20 +362,23 @@ def generate_desc_str(seq, answer, key_position):
 
 
 def need_experiment(s, answer, pos, ratio, from_china):
-    # 中国上传
-    if from_china =='是':
-        return True
-
-    # 突变频率< 0.1 %
-    if ratio <=0.0999:
-        return False
     keystr = get_key_compstr(s, pos)
     strans = get_key_compstr(answer, pos)
+
     # 缺失多余5个，有N都不验证
     if keystr.count('-') >= 5:
         return False
     if 'N' in keystr:
         return False
+
+    # 突变频率< 0.1 %
+    if ratio <5:
+        return False
+
+    # 中国上传
+    if from_china =='是':
+        return True
+
     # 存在碱基的插入、缺失
     if '-' in answer or '-' in keystr:
         return True
@@ -622,13 +625,12 @@ def gen_detail_excel():
         df=pd.DataFrame(detail_write_data,columns=detail_cols)
         df.to_excel(xlsx_path , index=False)
     else:
-        with pd.ExcelWriter(xlsx_path,engine='openpyxl',mode='a') as writer:
-            writer.if_sheet_exists = "replace"
+        with pd.ExcelWriter(xlsx_path,engine='openpyxl',mode='a', if_sheet_exists='replace') as writer:
             df_old = pd.read_excel(xlsx_path, sheet_name=0)
             df=pd.DataFrame(detail_write_data,columns=detail_cols)
             f = [df_old, df]
             result = pd.concat(f, axis=0)
-            result.to_excel(writer, index=False)
+            result.to_excel(writer,index=False)
 
 gen_detail_excel()
 
@@ -639,8 +641,7 @@ def gen_result_excel():
         df=pd.DataFrame(result_write_data,columns=cols)
         df.to_excel(xlsx_path , index=False)
     else:
-        with pd.ExcelWriter(xlsx_path,engine='openpyxl',mode='a') as writer:
-            writer.if_sheet_exists = "replace"
+        with pd.ExcelWriter(xlsx_path,engine='openpyxl',mode='a',if_sheet_exists='replace') as writer:
             df_old = pd.read_excel(xlsx_path, sheet_name=0)
             df=pd.DataFrame(result_write_data, columns=cols)
             f = [df_old, df]
